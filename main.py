@@ -1,50 +1,127 @@
-
 # This script organizes files in the user's download folder by moving them into categorized subdirectories based on their file extensions.
-#imports necessary libraries
+# imports necessary libraries
 import os
 import shutil
 import pathlib
 
-# Define lists of file extensions for various file types
-# These will be used to categorize files in the download folder
-# Image file extensions
-images = ["jpg", "jpeg", "png", "gif", "bmp", "tiff", "webp", "svg", "ico", "heic", "raw", "psd"]
+# Extentions dictionary(faster than previous version using multiple lists)
+file_extensions = {
+    #Image 
+    "jpg": "images",
+    "jpeg": "images",
+    "png": "images",
+    "gif": "images",
+    "bmp": "images",
+    "tiff": "images",
+    "webp": "images",
+    "svg": "images",
+    "ico": "images",
+    "heic": "images",
+    "raw": "images",
+    "psd": "images",
+    #Videos
+    "mp4": "videos",
+    "avi": "videos",
+    "mov": "videos",
+    "wmv": "videos",
+    "flv": "videos",
+    "mkv": "videos",
+    "webm": "videos",
+    "m4v": "videos",
+    "mpeg": "videos",
+    "mpg": "videos",
+    "3gp": "videos",
+    #Audio
+    "mp3": "audio",
+    "wav": "audio",
+    "ogg": "audio",
+    "flac": "audio",
+    "aac": "audio",
+    "wma": "audio",
+    "m4a": "audio",
+    "aiff": "audio",
+    "alac": "audio",
+    #Documents
+    "pdf": "documents",
+    "doc": "documents",
+    "docx": "documents",
+    "txt": "documents",
+    "rtf": "documents",
+    "odt": "documents",
+    "tex": "documents",
+    "ppt": "documents",
+    "pptx": "documents",
+    "xls": "documents",
+    "xlsx": "documents",
+    "csv": "documents",
+    "md": "documents",
+    "epub": "documents",
+    #Executables
+    "exe": "executables",
+    "msi": "executables",
+    "bat": "executables",
+    "sh": "executables",
+    "app": "executables",
+    "com": "executables",
+    "cmd": "executables",
+    "vbs": "executables",
+    "deb": "executables",
+    "rpm": "executables",
+    #Compressed
+    "zip": "compressed",
+    "rar": "compressed",
+    "7z": "compressed",
+    "tar": "compressed",
+    "gz": "compressed",
+    "bz2": "compressed",
+    "xz": "compressed",
+    "tgz": "compressed",
+    #Source Code
+    "py": "source_code",
+    "java": "source_code",
+    "cpp": "source_code",
+    "c": "source_code",
+    "h": "source_code",
+    "js": "source_code",
+    "html": "source_code",
+    "css": "source_code",
+    "php": "source_code",
+    "rb": "source_code",
+    "swift": "source_code",
+    "go": "source_code",
+    "rs": "source_code",
+    "ts": "source_code",
+    #Databases
+    "sql": "databases",
+    "db": "databases",
+    "sqlite": "databases",
+    "mdb": "databases",
+    "accdb": "databases",
+    "dbf": "databases",
+    #Fonts
+    "ttf": "fonts",
+    "otf": "fonts",
+    "woff": "fonts",
+    "woff2": "fonts",
+    "eot": "fonts",
+    #3D Models
+    "obj": "models_3d",
+    "fbx": "models_3d",
+    "stl": "models_3d",
+    "blend": "models_3d",
+    "3ds": "models_3d",
+    "dae": "models_3d",
+    #Vector Graphics
+    "ai": "vector_graphics",
+    "eps": "vector_graphics",
+    "cdr": "vector_graphics",
+    #Backups
+    "bak": "backups",
+    "old": "backups",
+    "backup": "backups"
+}
 
-# Video file extensions
-videos = ["mp4", "avi", "mov", "wmv", "flv", "mkv", "webm", "m4v", "mpeg", "mpg", "3gp"]
-
-# Audio file extensions
-audio = ["mp3", "wav", "ogg", "flac", "aac", "wma", "m4a", "aiff", "alac"]
-
-# Document file extensions
-documents = ["pdf", "doc", "docx", "txt", "rtf", "odt", "tex", "ppt", "pptx", "xls", "xlsx", "csv", "md", "epub"]
-
-# Executable file extensions
-executables = ["exe", "msi", "bat", "sh", "app", "com", "cmd", "vbs", "deb", "rpm"]
-
-# Compressed file extensions
-compressed = ["zip", "rar", "7z", "tar", "gz", "bz2", "xz", "tgz"]
-
-# Source code file extensions
-source_code = ["py", "java", "cpp", "c", "h", "js", "html", "css", "php", "rb", "swift", "go", "rs", "ts"]
-
-# Database file extensions
-databases = ["sql", "db", "sqlite", "mdb", "accdb", "dbf"]
-
-# Font file extensions
-fonts = ["ttf", "otf", "woff", "woff2", "eot"]
-
-# 3D model file extensions
-models_3d = ["obj", "fbx", "stl", "blend", "3ds", "dae"]
-
-# Vector graphics file extensions
-vector_graphics = ["ai", "eps", "cdr"]
-
-# Backup file extensions
-backups = ["bak", "old", "backup"]
-
-
-USER_NAME = os.getlogin() #Get username of the user
+USER_NAME = os.getlogin()  # Get username of the user
 # Define paths for the source (downloads) and destination folders
 # Each file type will have its own destination folder
 downloads_path = fr"C:\users\{USER_NAME}\downloads"
@@ -58,11 +135,17 @@ CODE_PATH = os.path.join(downloads_path, "Code")
 DATABASES_PATH = os.path.join(downloads_path, "Databases")
 FONTS_PATH = os.path.join(downloads_path, "Fonts")
 MODELS_PATH = os.path.join(downloads_path, "3D Models")
-VECTOR_GRAPHICS_PATH =  os.path.join(downloads_path, "Vector Graphics")
-BACKUPS_PATH =  os.path.join(downloads_path, "Backups")
+VECTOR_GRAPHICS_PATH = os.path.join(downloads_path, "Vector Graphics")
+BACKUPS_PATH = os.path.join(downloads_path, "Backups")
 
-def create_dir(path:str):
-    global dirc
+#A dictionary containing key value as the file type and data value as the path to where the file needs to be moved to
+path_dictionary = {"images": IMAGES_PATH, "videos": VIDEOS_PATH, "audio": AUDIO_PATH, "documents": DOCUMENTS_PATH,
+                   "executables": EXECUTABLES_PATH, "compressed": COMPRESSED_PATH, "source_code": CODE_PATH,
+                   "databases": DATABASES_PATH, "fonts": FONTS_PATH, "models_3d": MODELS_PATH,
+                   "vector_graphics": VECTOR_GRAPHICS_PATH, "backups": BACKUPS_PATH}
+
+
+def create_dir(path: str):
     """
     Makes a directory with the passed in parameter
     :param path:
@@ -70,8 +153,10 @@ def create_dir(path:str):
     """
     try:
         os.makedirs(path)
-    except Exception as e:
+    except :
         pass
+
+
 def move_files(source_path: str, destination_path: str):
     """
     Moves a file from the source path to destination path and creates a directory if destination path doesn't exist
@@ -85,37 +170,16 @@ def move_files(source_path: str, destination_path: str):
         create_dir(destination_path)
         try:
             shutil.move(source_path, destination_path)
-        except Exception as r:
+        except:
             pass
+
+
 # Iterate through all items in the downloads folder
 for files in os.listdir(downloads_path):
-    joined_path = os.path.join(downloads_path, files) #Joins the downloads path and the file name
-    extention = str(pathlib.Path(joined_path).suffix).replace('.', '') #Gets the extention of the file
-    if os.path.isfile(path=os.path.join(downloads_path, files)): #Checks if the path is of a file or a directory
-        #Check if the extention is present in any of included extentions and moves the file to teh appropriate location
-        if extention in images:
-            move_files(joined_path, IMAGES_PATH)
-        elif extention in videos:
-            move_files(joined_path, VIDEOS_PATH)
-        elif extention in documents:
-            move_files(joined_path, DOCUMENTS_PATH)
-        elif extention in audio:
-            move_files(joined_path, AUDIO_PATH)
-        elif extention in compressed:
-            move_files(joined_path, COMPRESSED_PATH)
-        elif extention in executables:
-            move_files(joined_path, EXECUTABLES_PATH)
-        elif extention in source_code:
-            move_files(joined_path, CODE_PATH)
-        elif extention in models_3d:
-            move_files(joined_path, MODELS_PATH)
-        elif extention in backups:
-            move_files(joined_path, BACKUPS_PATH)
-        elif extention in vector_graphics:
-            move_files(joined_path, VECTOR_GRAPHICS_PATH)
-        elif extention in databases:
-            move_files(joined_path, DATABASES_PATH)
-        elif extention in fonts:
-            move_files(joined_path, FONTS_PATH)
-
-
+    joined_path = os.path.join(downloads_path, files)  # Joins the downloads path and the file name
+    extension = str(pathlib.Path(joined_path).suffix).replace('.', '')  # Gets the extension of the file
+    if os.path.isfile(path=os.path.join(downloads_path, files)):  # Checks if the path is of a file or a directory
+        try:
+            move_files(joined_path, path_dictionary[file_extensions[extension]]) #Moves the file to the directory obtained from path_dictionary and file_extentions dictionary
+        except:
+            pass
