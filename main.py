@@ -121,10 +121,9 @@ file_extensions = {
     "backup": "backups"
 }
 
-USER_NAME = os.getlogin()  # Get username of the user
 # Define paths for the source (downloads) and destination folders
 # Each file type will have its own destination folder
-downloads_path = fr"C:\users\{USER_NAME}\downloads"
+downloads_path = os.path.expanduser("~/Downloads")
 IMAGES_PATH = os.path.join(downloads_path, "Images")
 VIDEOS_PATH = os.path.join(downloads_path, "Videos")
 AUDIO_PATH = os.path.join(downloads_path, "Audio")
